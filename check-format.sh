@@ -1,6 +1,7 @@
 #!/bin/sh
 
 FAILED=0
+SOURCE_REF=${SOURCE_REF:-HEAD}
 [ -z "`echo -e`" ] && alias echo="echo -e "
 
 # Make sure target branch exists
@@ -16,7 +17,7 @@ if [ -z "${REV}" ]; then
     exit 1
 fi
 
-for c in `git rev-list --reverse HEAD ^${REV}`; do
+for c in `git rev-list --reverse ${SOURCE_REF} ^${REV}`; do
 echo -n "${c}...";
 CF_OUTPUT="`git -c color.ui=always clang-format --diff "${c}^" "${c}" -- "$@"`";
 if [ -z "${CF_OUTPUT}" ] || [ "${CF_OUTPUT}" = "no modified files to format" ]; then

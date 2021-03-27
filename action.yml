@@ -6,8 +6,9 @@ inputs:
     description: 'The target ref to find a merge base with'
     required: true
   source-ref:
-    description: 'The source ref to check commits from. Assumes existing HEAD if omitted'
+    description: 'The source ref to check commits from. HEAD if omitted'
     required: false
+    default: HEAD
   fetch-depth:
     description: 'Fetch depth for git (default: 50)'
     required: false

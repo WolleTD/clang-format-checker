@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # GitLab CI doesn't allow us to run containers with arbitrary args
 # and executes a shell instead. I'd wish for just a `cd $GITLAB_PROJECT_DIR` here.
@@ -9,9 +9,9 @@ fi
 
 # When source-ref is provided to this action, it will attempt to initialize
 # the working repository itself, thus not requiring something like actions/checkout
-if [ -n "$SOURCE_REF" ]; then
-    if git status 2>/dev/null; then
-        echo "Error: Git repository already exists!" >&2
+if ! git status 2>/dev/null; then
+    if [ -z "$SOURCE_REF" ]; then
+        echo "Must provide source-ref without pre-fetched repository"
         exit 1
     fi
     echo "Initializing repository..."
