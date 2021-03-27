@@ -1,0 +1,23 @@
+name: "clang-format check"
+description: "Checks each commit between HEAD and a merge base for proper format"
+
+inputs:
+  target-ref:
+    description: 'The target ref to find a merge base with'
+    required: true
+  source-ref:
+    description: 'The source ref to check commits from. Assumes existing HEAD if omitted'
+    required: false
+  fetch-depth:
+    description: 'Fetch depth for git (default: 50)'
+    required: false
+    default: 50
+
+runs:
+  using: "docker"
+  image: "docker://wolletd/clang-format:latest"
+  env:
+    SOURCE_REF: ${{ inputs.source-ref }}
+    FETCH_DEPTH: ${{ inputs.fetch-depth }}
+  args:
+    - ${{ inputs.target-ref }}
