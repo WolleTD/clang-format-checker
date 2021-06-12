@@ -1,5 +1,8 @@
-name: "clang-format check"
-description: "Checks each commit between HEAD and a merge base for proper format"
+name: "git-clang-format check per commit"
+description: "Check each commit for proper format individually and don't allow format fixups"
+branding:
+  icon: 'check-circle'
+  color: 'blue'
 
 inputs:
   target-ref:
