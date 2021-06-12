@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -n "$1" ] || { echo "Error: Missing argument" >&2; exit 1; }
+
+clang_format_bin="/usr/local/bin/clang-format-$1_linux-amd64"
+[ -f "$clang_format_bin" ] || { echo "Error: File $clang_format_bin not found" >&2; exit 1; }
+
+ln -sf "$clang_format_bin" /usr/bin/clang-format

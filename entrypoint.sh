@@ -21,4 +21,5 @@ if ! git status 2>/dev/null; then
     git checkout -q $SOURCE_REF
 fi
 
+[ -z "$CLANG_VERSION" ] || set-clang-version "$CLANG_VERSION"
 check-format.sh "$@"

@@ -9,6 +9,10 @@ inputs:
     description: 'The source ref to check commits from. HEAD if omitted'
     required: false
     default: HEAD
+  clang-version:
+    description: 'The version of clang-format to use (3.9 to 12)'
+    required: false
+    default: 12
   fetch-depth:
     description: 'Fetch depth for git (default: 50)'
     required: false
@@ -20,5 +24,6 @@ runs:
   env:
     SOURCE_REF: ${{ inputs.source-ref }}
     FETCH_DEPTH: ${{ inputs.fetch-depth }}
+    CLANG_VERSION: ${{ inputs.clang-version }}
   args:
     - ${{ inputs.target-ref }}
