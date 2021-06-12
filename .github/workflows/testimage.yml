@@ -1,8 +1,8 @@
-name: Build Docker Image
+name: Build Test Image
 
 on:
   push:
-    branches: [ master ]
+    branches-ignore: [ master ]
 
 jobs:
   docker:
@@ -11,19 +11,19 @@ jobs:
       - name: Pull repository
         uses: actions/checkout@v2
       - name: Build the image
-        run: docker build . --tag wolletd/clang-format:latest
+        run: docker build . --tag wolletd/clang-format:test
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push the image
-        run: docker push wolletd/clang-format:latest
+        run: docker push wolletd/clang-format:test
   test-pass:
     runs-on: ubuntu-latest
     needs: docker
     steps:
-      - uses: wolletd/clang-format-checker@master
+      - uses: wolletd/clang-format-checker@test
         with:
           source-ref: testdata
           target-ref: master
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker
     steps:
-      - uses: wolletd/clang-format-checker@master
+      - uses: wolletd/clang-format-checker@test
         with:
           source-ref: testdata2
           target-ref: master
