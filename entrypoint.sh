@@ -18,6 +18,8 @@ if ! git status 2>/dev/null; then
     git init -q "$PWD"
     git remote add origin "https://github.com/$GITHUB_REPOSITORY"
     git fetch origin --depth=$FETCH_DEPTH $SOURCE_REF
+    git checkout -q $SOURCE_REF 2>/dev/null || \
+        git fetch origin --depth=$FETCH_DEPTH refs/tags/$SOURCE_REF:refs/tags/$SOURCE_REF
     git checkout -q $SOURCE_REF
 fi
 
