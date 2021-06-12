@@ -1,6 +1,8 @@
+#include <fmt/format.h>
 #include <iostream>
 
-int main() {
-    std::cout << "Hello, world!\n";
+int main()
+{
+  fmt::print("Hello, world!\n");
     return 0;
 }
