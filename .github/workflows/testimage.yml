@@ -19,23 +19,29 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push the image
         run: docker push wolletd/clang-format:test
-  test-pass:
+  tests:
     runs-on: ubuntu-latest
     needs: docker
     steps:
-      - uses: wolletd/clang-format-checker@test
+      - name: test with no error
+        uses: wolletd/clang-format-checker@test
         with:
           source-ref: testdata
           target-ref: master
-  test-fail:
-    runs-on: ubuntu-latest
-    needs: docker
-    steps:
-      - uses: wolletd/clang-format-checker@test
+      - name: test with format error
+        uses: wolletd/clang-format-checker@test
         with:
           source-ref: testdata2
           target-ref: master
         continue-on-error: true
-        id: check
-      - if: steps.check.outcome == 'success'
+        id: fail1
+      - name: test with git error
+        uses: wolletd/clang-format-checker@test
+        with:
+          source-ref: testdata
+          target-ref: nonexistent
+        continue-on-error: true
+        id: fail2
+      - name: check for expected failures
+        if: steps.fail1.outcome == 'success' || steps.fail2.outcome == 'success'
         run: exit 1
