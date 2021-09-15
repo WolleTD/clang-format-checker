@@ -4,6 +4,10 @@ set -e
 exitCode=0
 [ -z "$(echo -e)" ] || { echo "Error: needs echo with -e support" >&2; exit 1; }
 
+# Ensure that the current HEAD has some history (by default this is not the case with actions/checkout)
+head_sha=$(git rev-parse --verify HEAD)
+git fetch "--depth=${FETCH_DEPTH:-50}" origin "+${head_sha}"
+
 # Make sure target branch exists
 revisionArg=${1}; shift
 revision=$(git rev-parse --verify origin/${revisionArg} 2>/dev/null) || {
@@ -16,8 +20,9 @@ revision=$(git rev-parse --verify origin/${revisionArg} 2>/dev/null) || {
 }
 
 [ -n "${revision}" ] || { echo "Error: Programmer is an idiot" >&2; exit 1; }
+echo "Checking $(git rev-list --count --reverse "HEAD" "^${revision}") commits since revision ${revision}"
 
-for commit in $(git rev-list --reverse HEAD ^${revision}); do
+for commit in $(git rev-list --reverse "HEAD" "^${revision}"); do
     echo -n "${commit}..."
     cfOutput="$(git -c color.ui=always clang-format --diff "${commit}^" "${commit}" -- "$@")";
     if [ -z "${cfOutput}" ] || [ "${cfOutput}" = "no modified files to format" ]; then
