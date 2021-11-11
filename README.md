@@ -9,6 +9,9 @@ adding format fixup commits that will result in bad `git blame` results in the f
 By default, `clang-format` version 12 is used, but this can be changed with the `clang-version`
 argument. No checkout before running this action is required.
 
+Uses static clang-format binaries from
+[muttleyxd/clang-tools-static-binaries](https://github.com/muttleyxd/clang-tools-static-binaries).
+
 ## Usage
 
 ```yaml
