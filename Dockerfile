@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk --no-cache add git python3 && ln -s python3 /usr/bin/python
+RUN apk --no-cache add git python3 patch && ln -s python3 /usr/bin/python
 
 ARG GH_REPO="muttleyxd/clang-tools-static-binaries"
 ARG GH_RELEASE="master-f3a37dd2"
@@ -22,8 +22,15 @@ ADD ${GH_URL}/clang-format-3.9_linux-amd64  \
     check-format.sh                         \
     set-clang-version                       \
     clang-format_linux.sha512sums           \
+    git-clang-format-13                     \
+    0001-remove-json-support.patch          \
+    0001-remove-json-csharp-support.patch   \
     /usr/local/bin/
-ADD git-clang-format-13 /usr/local/bin/git-clang-format
+
+RUN cd /usr/local/bin && \
+    patch -o git-clang-format-12 <0001-remove-json-support.patch && \
+    patch -o git-clang-format-8 <0001-remove-json-csharp-support.patch && \
+    chmod +x git-clang-format-12 git-clang-format-8
 
 RUN cd /usr/local/bin && sha512sum -c clang-format_linux.sha512sums && \
     chmod +x /usr/local/bin/clang-format-* && set-clang-version 13

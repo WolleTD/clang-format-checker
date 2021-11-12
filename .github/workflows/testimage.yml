@@ -26,6 +26,12 @@ jobs:
         with:
           source-ref: testdata
           target-ref: master
+      - name: test json is skipped
+        uses: wolletd/clang-format-checker@test
+        with:
+          source-ref: testdata
+          target-ref: master
+          clang-version: 12
       - name: test with format error
         uses: wolletd/clang-format-checker@test
         with:
