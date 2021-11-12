@@ -13,9 +13,8 @@ inputs:
     required: false
     default: HEAD
   clang-version:
-    description: 'The version of clang-format to use (3.9 to 12)'
+    description: 'The version of clang-format to use (default: latest)'
     required: false
-    default: 12
   fetch-depth:
     description: 'Fetch depth for git (default: 50)'
     required: false
