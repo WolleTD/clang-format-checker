@@ -1,8 +1,20 @@
 #!/bin/sh
 
 [ -n "$1" ] || { echo "Error: Missing argument" >&2; exit 1; }
+ver="$1"
 
-clang_format_bin="/usr/local/bin/clang-format-$1_linux-amd64"
+clang_format_bin="/usr/local/bin/clang-format-${ver}_linux-amd64"
 [ -f "$clang_format_bin" ] || { echo "Error: File $clang_format_bin not found" >&2; exit 1; }
 
 ln -sf "$clang_format_bin" /usr/bin/clang-format
+
+ver="${ver%%.*}"
+if [ $ver -le 8 ]; then
+    git_cf_ver=8
+elif [ $ver -le 12 ]; then
+    git_cf_ver=12
+else
+    git_cf_ver=13
+fi
+
+ln -sf "/usr/local/bin/git-clang-format-${git_cf_ver}" /usr/bin/git-clang-format
