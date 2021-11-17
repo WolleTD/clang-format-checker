@@ -49,3 +49,39 @@ jobs:
       - name: check for expected failures
         if: steps.fail1.outcome == 'success' || steps.fail2.outcome == 'success'
         run: exit 1
+  tests-checkout:
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - name: checkout testdata
+        uses: actions/checkout@v2
+        with:
+          ref: testdata
+      - name: test with no error
+        uses: wolletd/clang-format-checker@test
+        with:
+          target-ref: master
+      - name: test json is skipped
+        uses: wolletd/clang-format-checker@test
+        with:
+          target-ref: master
+          clang-version: 12
+      - name: test with git error
+        uses: wolletd/clang-format-checker@test
+        with:
+          target-ref: nonexistent
+        continue-on-error: true
+        id: fail2
+      - name: checkout testdata2
+        uses: actions/checkout@v2
+        with:
+          ref: testdata2
+      - name: test with format error
+        uses: wolletd/clang-format-checker@test
+        with:
+          target-ref: master
+        continue-on-error: true
+        id: fail1
+      - name: check for expected failures
+        if: steps.fail1.outcome == 'success' || steps.fail2.outcome == 'success'
+        run: exit 1
