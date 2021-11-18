@@ -24,7 +24,9 @@ echo "Checking $(git rev-list --count --reverse "HEAD" "^${revision}") commits s
 for commit in $(git rev-list --reverse "HEAD" "^${revision}"); do
     printf "%s" "${commit}... "
     cfOutput="$(git -c color.ui=always clang-format --diff "${commit}^" "${commit}" -- "$@")";
-    if [ -z "${cfOutput}" ] || [ "${cfOutput}" = "no modified files to format" ]; then
+    if [ "$SHOW_SKIPPED" ] && [ "${cfOutput}" = "no modified files to format" ]; then
+        printf "%b\n" "\e[32mSKIPPED\e[0m"
+    elif [ -z "${cfOutput}" ] || [ "${cfOutput}" = "no modified files to format" ]; then
         printf "%b\n" "\e[32mPASSED\e[0m"
     else
         printf "%b\n" "\e[31;1mFAILED\e[0m"

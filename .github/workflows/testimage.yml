@@ -2,6 +2,9 @@ name: Build Test Image
 
 on: [ pull_request ]
 
+env:
+  SHOW_SKIPPED: 1
+
 jobs:
   docker:
     runs-on: ubuntu-latest
