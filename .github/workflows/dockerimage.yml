@@ -26,7 +26,7 @@ jobs:
         run: docker push wolletd/clang-format:latest
       - name: Push the rooted image
         run: docker push wolletd/clang-format:root
-  tests:
+  tests-standalone:
     runs-on: ubuntu-latest
     needs: docker
     steps:
@@ -94,3 +94,19 @@ jobs:
       - name: check for expected failures
         if: steps.fail1.outcome == 'success' || steps.fail2.outcome == 'success'
         run: exit 1
+  tests-wrapper:
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: fetch required refs
+        run: git fetch --depth=50 origin master:master tag testdata tag testdata2
+      - name: test with no error
+        run: ./clang-format-checker master testdata
+      - name: test json is skipped
+        run: ./clang-format-checker -v12 master testdata
+      - name: test with git error
+        run: '! ./clang-format-checker nonexistent testdata'
+      - name: test with format error
+        run: '! ./clang-format-checker master testdata2'

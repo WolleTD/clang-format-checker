@@ -1,0 +1,68 @@
+#!/bin/bash -e
+
+thisDir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+docker_image="${CFC_DOCKER_IMAGE:-wolletd/clang-format:latest}"
+
+die() { echo "$@" >&2; exit 1; }
+
+usage() {
+    echo -e "Usage: $1 [--pull] [--build] [-v|--version <VER>] <target> [source]\n\n" \
+            "If source is omitted, current HEAD is used.\n\n" \
+            "The --pull and --build flags can be used without target to update the container.\n" \
+            "--build and --pull can be used together to pass --pull to docker build\n\n"
+}
+
+while :; do
+    case "$1" in
+        -v?*|--version=?*)
+            ver="${1#*=}"
+            [ "$ver" != "$1" ] || ver="${1#-v}" ;;
+        -v|--version)
+            [ "$2" ] || die "Error: $1 requires a version"
+            ver="$2"
+            shift ;;
+        --pull)
+            pull=1 ;;
+        --build)
+            build=1 ;;
+        -h|--help)
+            usage "$0"
+            exit 0 ;;
+        --)
+            shift; break ;;
+        -?*)
+            echo "Warning: ignoring option $1" ;;
+        *)
+            break
+    esac
+    shift
+done
+
+if [ -n "$ver" ]; then
+    [[ ${ver%%.*} -gt 0 ]] || die "Error: invalid clang version \"$CLANG_VERSION\""
+    CLANG_VERSION="$ver"
+fi
+
+export CLANG_VERSION
+
+if [ "$build" ]; then
+    [ -f "$thisDir/Dockerfile" ] || die "Error: script has to be in project directory to use --build"
+    docker build ${pull:+--pull} -t "$docker_image" "$thisDir"
+    # exit without warning when no other args are present
+    [ $# -gt 0 ] || exit 0
+elif [ "$pull" ]; then
+    docker pull "$docker_image"
+    # exit without warning when no other args are present
+    [ $# -gt 0 ] || exit 0
+fi
+
+[ -n "$1" ] || die "Error: missing target ref (-h for usage)"
+
+docker run                  \
+    --rm                    \
+    -v "${PWD}:/workdir"    \
+    -e CLANG_VERSION        \
+    -e SHOW_SKIPPED         \
+    --workdir "/workdir"    \
+    -u "$(id -u):$(id -g)"  \
+    "${docker_image}" "$@"

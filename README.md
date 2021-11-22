@@ -14,7 +14,11 @@ script in GitLab CI scripts). No checkout before running this action is required
 Uses static clang-format binaries from
 [muttleyxd/clang-tools-static-binaries](https://github.com/muttleyxd/clang-tools-static-binaries).
 
+The container can also be used locally via the `clang-format-checker` script.
+
 ## Usage
+
+### As GitHub action
 
 ```yaml
 jobs:
@@ -28,6 +32,16 @@ jobs:
           fetch-depth: 80       # optional, rarely needed, default: 50
           source-ref: develop   # optional, almost never needed, default: HEAD
 ```
+
+### Local
+
+Download the `clang-format-checker` script (or clone the repository if you want to build the
+container yourself) and execute it with arguments `[-v VER] <target> [source]`.
+
+* the user has to be a member of the `docker` group
+* no fetches are performed
+* run `clang-format-checker --build` to build the image locally (repository required)
+* run `clang-format-checker --pull` to update the image from hub.docker.com
 
 ## Screenshot
 
