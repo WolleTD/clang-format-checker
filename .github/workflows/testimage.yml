@@ -2,6 +2,9 @@ name: Build Test Image
 
 on: [ pull_request ]
 
+env:
+  SHOW_SKIPPED: 1
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -9,7 +12,7 @@ jobs:
       - name: Pull repository
         uses: actions/checkout@v2
       - name: Build the image
-        run: docker build . --tag wolletd/clang-format:test
+        run: docker build . --build-arg UID=$(id -u) --tag wolletd/clang-format:test
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -17,7 +20,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push the image
         run: docker push wolletd/clang-format:test
-  tests:
+  tests-standalone:
     runs-on: ubuntu-latest
     needs: docker
     steps:
@@ -49,3 +52,57 @@ jobs:
       - name: check for expected failures
         if: steps.fail1.outcome == 'success' || steps.fail2.outcome == 'success'
         run: exit 1
+  tests-checkout:
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - name: checkout testdata
+        uses: actions/checkout@v2
+        with:
+          ref: testdata
+      - name: test with no error
+        uses: wolletd/clang-format-checker@test
+        with:
+          target-ref: master
+      - name: test json is skipped
+        uses: wolletd/clang-format-checker@test
+        with:
+          target-ref: master
+          clang-version: 12
+      - name: test with git error
+        uses: wolletd/clang-format-checker@test
+        with:
+          target-ref: nonexistent
+        continue-on-error: true
+        id: fail2
+      - name: checkout testdata2
+        uses: actions/checkout@v2
+        with:
+          ref: testdata2
+      - name: test with format error
+        uses: wolletd/clang-format-checker@test
+        with:
+          target-ref: master
+        continue-on-error: true
+        id: fail1
+      - name: check for expected failures
+        if: steps.fail1.outcome == 'success' || steps.fail2.outcome == 'success'
+        run: exit 1
+  tests-wrapper:
+    runs-on: ubuntu-latest
+    needs: docker
+    env:
+      CFC_DOCKER_IMAGE: wolletd/clang-format:test
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: fetch required refs
+        run: git fetch --depth=50 origin master:master tag testdata tag testdata2
+      - name: test with no error
+        run: ./clang-format-checker master testdata
+      - name: test json is skipped
+        run: ./clang-format-checker -v12 master testdata
+      - name: test with git error
+        run: '! ./clang-format-checker nonexistent testdata'
+      - name: test with format error
+        run: '! ./clang-format-checker master testdata2'

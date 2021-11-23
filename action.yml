@@ -24,8 +24,8 @@ runs:
   using: "docker"
   image: "docker://wolletd/clang-format:latest"
   env:
-    SOURCE_REF: ${{ inputs.source-ref }}
     FETCH_DEPTH: ${{ inputs.fetch-depth }}
     CLANG_VERSION: ${{ inputs.clang-version }}
   args:
     - ${{ inputs.target-ref }}
+    - ${{ inputs.source-ref }}

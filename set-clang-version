@@ -6,7 +6,7 @@ ver="$1"
 clang_format_bin="/usr/local/bin/clang-format-${ver}_linux-amd64"
 [ -f "$clang_format_bin" ] || { echo "Error: File $clang_format_bin not found" >&2; exit 1; }
 
-ln -sf "$clang_format_bin" /usr/bin/clang-format
+ln -sf "$clang_format_bin" /usr/local/bin/clang-format
 
 ver="${ver%%.*}"
 if [ $ver -le 8 ]; then
@@ -17,4 +17,4 @@ else
     git_cf_ver=13
 fi
 
-ln -sf "/usr/local/bin/git-clang-format-${git_cf_ver}" /usr/bin/git-clang-format
+ln -sf "/usr/local/bin/git-clang-format-${git_cf_ver}" /usr/local/bin/git-clang-format

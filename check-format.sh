@@ -1,30 +1,41 @@
 #!/bin/sh
 set -e
 
+die() { echo "$@" >&2; exit 1; }
+
 exitCode=0
 
-# Ensure that the current HEAD has some history (by default this is not the case with actions/checkout)
-head_sha=$(git rev-parse --verify HEAD)
-git fetch "--depth=${FETCH_DEPTH:-50}" origin "+${head_sha}"
-
 # Make sure target branch exists
-revisionArg=${1}; shift
-revision=$(git rev-parse --verify "origin/${revisionArg}" 2>/dev/null) || {
-    git fetch "--depth=${FETCH_DEPTH:-50}" origin "${revisionArg}"
-    revision=$(git rev-parse --verify "origin/${revisionArg}" 2>/dev/null || \
-        git rev-parse --verify "${revisionArg}" 2>/dev/null) || {
-            echo "Can't find merge target '${revision}'!" >&2
-            return 1
-        }
-}
+target="$1"; shift
 
-[ -n "${revision}" ] || { echo "Error: Programmer is an idiot" >&2; exit 1; }
-echo "Checking $(git rev-list --count --reverse "HEAD" "^${revision}") commits since revision ${revision}"
+if [ "$CI" ]; then
+    git rev-parse -q --no-revs --verify "origin/${target}" || git fetch origin --depth=1 "${target}"
+    # Ensure that the target revision has some history
+    target_sha=$(git rev-parse --verify "origin/${target}")
+    git fetch -q "--depth=${FETCH_DEPTH:-50}" origin "+${target_sha}"
+else
+    target_sha=$(git rev-parse -q --verify "${target}") || die "fatal: couldn't find ref ${target}"
+fi
 
-for commit in $(git rev-list --reverse "HEAD" "^${revision}"); do
+if [ -z "$1" ] || [ -e "$1" ]; then
+    src=HEAD
+else
+    src="$1"; shift
+fi
+
+# We expect the user or CI (either GitLab or entrypoint.sh) to have taken care of source history
+src_sha=$(git rev-parse -q --verify "${src}") || die "fatal: couldn't find ref ${src}"
+
+echo "Using $(clang-format --version)"
+
+echo "Checking $(git rev-list --count "${src_sha}" "^${target_sha}") commits since revision ${target_sha}"
+
+for commit in $(git rev-list --reverse "${src_sha}" "^${target_sha}"); do
     printf "%s" "${commit}... "
     cfOutput="$(git -c color.ui=always clang-format --diff "${commit}^" "${commit}" -- "$@")";
-    if [ -z "${cfOutput}" ] || [ "${cfOutput}" = "no modified files to format" ]; then
+    if [ "$SHOW_SKIPPED" ] && [ "${cfOutput}" = "no modified files to format" ]; then
+        printf "%b\n" "\e[32mSKIPPED\e[0m"
+    elif [ -z "${cfOutput}" ] || [ "${cfOutput}" = "no modified files to format" ]; then
         printf "%b\n" "\e[32mPASSED\e[0m"
     else
         printf "%b\n" "\e[31;1mFAILED\e[0m"

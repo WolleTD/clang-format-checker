@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:latest AS root
 
 RUN apk --no-cache add git python3 patch && ln -s python3 /usr/bin/python
 
@@ -30,9 +30,17 @@ ADD ${GH_URL}/clang-format-3.9_linux-amd64  \
 RUN cd /usr/local/bin && \
     patch -o git-clang-format-12 <0001-remove-json-support.patch && \
     patch -o git-clang-format-8 <0001-remove-json-csharp-support.patch && \
-    chmod +x git-clang-format-12 git-clang-format-8
+    chmod +rx git-clang-format-12 git-clang-format-8
+
+# GH Actions uses uid 1001 at the time of this writing, but the workflow
+# building this image will set it to the uid used to build
+ARG UID=1001
 
 RUN cd /usr/local/bin && sha512sum -c clang-format_linux.sha512sums && \
-    chmod +x /usr/local/bin/clang-format-* && set-clang-version 13
+    chmod +x /usr/local/bin/clang-format-* && set-clang-version 13 && \
+    chmod go+w /usr/local/bin && adduser -Du "$UID" user
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+FROM root AS user
+USER user
