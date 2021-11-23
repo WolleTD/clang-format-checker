@@ -101,7 +101,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: fetch required refs
-        run: git fetch --depth=50 origin master:master tag testdata tag testdata2
+        run: git fetch --depth=50 origin master tag testdata tag testdata2
       - name: test with no error
         run: ./clang-format-checker master testdata
       - name: test json is skipped
