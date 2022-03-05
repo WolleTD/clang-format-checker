@@ -21,31 +21,42 @@ jobs:
       - name: Push the image
         run: docker push wolletd/clang-format:test
   tests-standalone:
+    strategy:
+      matrix:
+        target: [ master, 478faddd4a1471a574573d556491d8b14a2f2f5c ]
+        src-ok: [ testdata, test/data1, 5d839740ac4bcc3de80980b5f6447ec1cfbf3832 ]
+        include:
+          - src-ok: testdata
+            src-err: testdata2
+          - src-ok: test/data1
+            src-err: test/data2
+          - src-ok: 5d839740ac4bcc3de80980b5f6447ec1cfbf3832
+            src-err: d0c66c69a10caa195b4b46b0d95e48c0348a2e74
     runs-on: ubuntu-latest
     needs: docker
     steps:
       - name: test with no error
         uses: wolletd/clang-format-checker@test
         with:
-          source-ref: testdata
-          target-ref: master
+          source-ref: ${{ matrix.src-ok }}
+          target-ref: ${{ matrix.target }}
       - name: test json is skipped
         uses: wolletd/clang-format-checker@test
         with:
-          source-ref: testdata
-          target-ref: master
+          source-ref: ${{ matrix.src-ok }}
+          target-ref: ${{ matrix.target }}
           clang-version: 12
       - name: test with format error
         uses: wolletd/clang-format-checker@test
         with:
-          source-ref: testdata2
-          target-ref: master
+          source-ref: ${{ matrix.src-err }}
+          target-ref: ${{ matrix.target }}
         continue-on-error: true
         id: fail1
       - name: test with git error
         uses: wolletd/clang-format-checker@test
         with:
-          source-ref: testdata
+          source-ref: ${{ matrix.src-ok }}
           target-ref: nonexistent
         continue-on-error: true
         id: fail2
@@ -53,21 +64,32 @@ jobs:
         if: steps.fail1.outcome == 'success' || steps.fail2.outcome == 'success'
         run: exit 1
   tests-checkout:
+    strategy:
+      matrix:
+        target: [ master, 478faddd4a1471a574573d556491d8b14a2f2f5c ]
+        src-ok: [ testdata, test/data1, 5d839740ac4bcc3de80980b5f6447ec1cfbf3832 ]
+        include:
+          - src-ok: testdata
+            src-err: testdata2
+          - src-ok: test/data1
+            src-err: test/data2
+          - src-ok: 5d839740ac4bcc3de80980b5f6447ec1cfbf3832
+            src-err: d0c66c69a10caa195b4b46b0d95e48c0348a2e74
     runs-on: ubuntu-latest
     needs: docker
     steps:
-      - name: checkout testdata
+      - name: checkout ${{ matrix.src-ok }}
         uses: actions/checkout@v2
         with:
-          ref: testdata
+          ref: ${{ matrix.src-ok }}
       - name: test with no error
         uses: wolletd/clang-format-checker@test
         with:
-          target-ref: master
+          target-ref: ${{ matrix.target }}
       - name: test json is skipped
         uses: wolletd/clang-format-checker@test
         with:
-          target-ref: master
+          target-ref: ${{ matrix.target }}
           clang-version: 12
       - name: test with git error
         uses: wolletd/clang-format-checker@test
@@ -75,14 +97,14 @@ jobs:
           target-ref: nonexistent
         continue-on-error: true
         id: fail2
-      - name: checkout testdata2
+      - name: checkout ${{ matrix.src-err }}
         uses: actions/checkout@v2
         with:
-          ref: testdata2
+          ref: ${{ matrix.src-err }}
       - name: test with format error
         uses: wolletd/clang-format-checker@test
         with:
-          target-ref: master
+          target-ref: ${{ matrix.target }}
         continue-on-error: true
         id: fail1
       - name: check for expected failures

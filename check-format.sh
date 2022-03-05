@@ -9,9 +9,14 @@ exitCode=0
 target="$1"; shift
 
 if [ "$CI" ]; then
-    git rev-parse -q --no-revs --verify "origin/${target}" || git fetch origin --depth=1 "${target}"
+    git rev-parse -q --no-revs --verify "origin/${target}" || \
+        git rev-parse -q --no-revs --verify "${target}" || \
+        git fetch origin --depth=1 "${target}"
+    git rev-parse -q --no-revs --verify "origin/${target}" || \
+        git rev-parse -q --no-revs --verify "${target}" || \
+        git fetch origin --depth=1 tag "${target}"
     # Ensure that the target revision has some history
-    target_sha=$(git rev-parse --verify "origin/${target}")
+    target_sha=$(git rev-parse -q --verify "origin/${target}" || git rev-parse -q --verify "${target}")
     git fetch -q "--depth=${FETCH_DEPTH:-50}" origin "+${target_sha}"
 else
     target_sha=$(git rev-parse -q --verify "${target}") || die "fatal: couldn't find ref ${target}"
