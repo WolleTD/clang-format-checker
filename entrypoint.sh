@@ -28,8 +28,12 @@ fi
 
 if [ "$CI" ]; then
     if [ "$ref" != "HEAD" ]; then
-        git rev-parse -q --no-revs --verify "origin/$ref" || git fetch origin --depth=1 "$ref"
-        git rev-parse -q --no-revs --verify "origin/$ref" || git fetch origin --depth=1 tag "$ref"
+        git rev-parse -q --no-revs --verify "origin/$ref" || \
+            git rev-parse -q --no-revs --verify "$ref" || \
+            git fetch origin --depth=1 "$ref"
+        git rev-parse -q --no-revs --verify "origin/$ref" || \
+            git rev-parse -q --no-revs --verify "$ref" || \
+            git fetch origin --depth=1 tag "$ref"
     fi
     # Ensure that the source revision has some history (actions/checkout also uses depth=1)
     ref=$(git rev-parse -q --verify "origin/$ref" || git rev-parse -q --verify "$ref")
