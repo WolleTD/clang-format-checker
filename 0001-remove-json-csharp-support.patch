@@ -1,5 +1,5 @@
---- a/git-clang-format-13
-+++ b/git-clang-format-13
+--- a/git-clang-format-14
++++ b/git-clang-format-14
 @@ -84,8 +84,6 @@ def main():
        'java',  # Java
        'js',  # JavaScript
