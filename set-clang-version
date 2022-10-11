@@ -14,7 +14,7 @@ if [ $ver -le 8 ]; then
 elif [ $ver -le 12 ]; then
     git_cf_ver=12
 else
-    git_cf_ver=14
+    git_cf_ver=${CLANG_LATEST}
 fi
 
 ln -sf "/usr/local/bin/git-clang-format-${git_cf_ver}" /usr/local/bin/git-clang-format
