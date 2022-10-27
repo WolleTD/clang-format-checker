@@ -114,12 +114,12 @@ jobs:
       - name: Build the image
         run: docker build . --build-arg UID=$(id -u) --tag wolletd/clang-format:latest
       - name: fetch required refs
-        run: git fetch --depth=50 origin master:master tag testdata tag testdata2
+        run: git fetch --depth=50 origin master:test tag testdata tag testdata2
       - name: test with no error
-        run: ./clang-format-checker master testdata
+        run: ./clang-format-checker test testdata
       - name: test json is skipped
-        run: ./clang-format-checker -v12 master testdata
+        run: ./clang-format-checker -v12 test testdata
       - name: test with git error
         run: '! ./clang-format-checker nonexistent testdata'
       - name: test with format error
-        run: '! ./clang-format-checker master testdata2'
+        run: '! ./clang-format-checker test testdata2'
