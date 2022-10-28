@@ -37,7 +37,7 @@ echo "Checking $(git rev-list --count "${src_sha}" "^${target_sha}") commits sin
 
 for commit in $(git rev-list --reverse "${src_sha}" "^${target_sha}"); do
     printf "%s" "${commit}... "
-    cfOutput="$(git -c color.ui=always clang-format --diff "${commit}^" "${commit}" -- "$@")";
+    cfOutput="$(git -c color.ui=always clang-format --diff "${commit}^" "${commit}" -- "$@" || true)";
     if [ "$SHOW_SKIPPED" ] && [ "${cfOutput}" = "no modified files to format" ]; then
         printf "%b\n" "\e[32mSKIPPED\e[0m"
     elif [ -z "${cfOutput}" ] || [ "${cfOutput}" = "no modified files to format" ]; then

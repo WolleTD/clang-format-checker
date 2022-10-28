@@ -1,6 +1,6 @@
 name: Test action and script
 
-on: [ push, pull_request ]
+on: [ push ]
 
 env:
   DOCKER_BUILDKIT: 1
