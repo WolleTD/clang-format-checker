@@ -1,6 +1,6 @@
 FROM alpine:latest AS root
 
-RUN apk --no-cache add git python3 patch && ln -s python3 /usr/bin/python
+RUN apk --no-cache add git python3 patch
 
 ARG GH_REPO="muttleyxd/clang-tools-static-binaries"
 ARG GH_RELEASE="master-1d7ec53d"
