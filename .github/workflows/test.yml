@@ -23,28 +23,36 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+        with:
+          path: .test
       - name: Build the image
-        run: docker build . --build-arg UID=$(id -u) --tag wolletd/clang-format:latest
+        run: docker build .test --build-arg UID=$(id -u) --tag wolletd/clang-format:latest
       - name: test with no error
-        uses: ./
+        uses: ./.test/
         with:
           source-ref: ${{ matrix.src-ok }}
           target-ref: ${{ matrix.target }}
+      - name: clear git repo
+        run: rm -rf .git
       - name: test json is skipped
-        uses: ./
+        uses: ./.test/
         with:
           source-ref: ${{ matrix.src-ok }}
           target-ref: ${{ matrix.target }}
           clang-version: 12
+      - name: clear git repo
+        run: rm -rf .git
       - name: test with format error
-        uses: ./
+        uses: ./.test/
         with:
           source-ref: ${{ matrix.src-err }}
           target-ref: ${{ matrix.target }}
         continue-on-error: true
         id: fail1
+      - name: clear git repo
+        run: rm -rf .git
       - name: test with git error
-        uses: ./
+        uses: ./.test/
         with:
           source-ref: ${{ matrix.src-ok }}
           target-ref: nonexistent
