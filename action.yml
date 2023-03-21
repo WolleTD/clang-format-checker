@@ -22,7 +22,7 @@ inputs:
 
 runs:
   using: "docker"
-  image: "docker://wolletd/clang-format:latest"
+  image: "docker://ghcr.io/wolletd/clang-format:latest"
   env:
     FETCH_DEPTH: ${{ inputs.fetch-depth }}
     CLANG_VERSION: ${{ inputs.clang-version }}
