@@ -20,7 +20,7 @@ fi
 # the working repository itself, thus not requiring something like actions/checkout
 if ! git status >/dev/null 2>&1; then
     [ "$CI" ] || die "Not a git repository!"
-    [ "$ref" ] || die "Must provide source-ref without pre-fetched repository"
+    [ "$ref" = "HEAD" ] && ref=$GITHUB_REF_NAME
     echo "Initializing repository..."
     git init -q "$PWD"
     git remote add origin "https://github.com/$GITHUB_REPOSITORY"
