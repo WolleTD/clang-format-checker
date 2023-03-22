@@ -30,7 +30,8 @@ jobs:
           target-ref: main      # required, merge target
           clang-version: 10     # optional, default: latest (in image)
           fetch-depth: 80       # optional, rarely needed, default: 50
-          source-ref: develop   # optional, almost never needed, default: HEAD
+          source-ref: develop   # optional, almost never needed, default: HEAD if
+                                # a repository exists, $GITHUB_REF_NAME otherwise
 ```
 
 ### Local
