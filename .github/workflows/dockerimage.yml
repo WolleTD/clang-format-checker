@@ -30,27 +30,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Retrieve user ID
-        run: echo "UID=$(id -u)" | tee -a $GITHUB_ENV
-
-      - name: Build and push image with UID
+      - name: Build and push image
         uses: docker/build-push-action@v4
         with:
           context: .
-          build-args: UID=${{ env.UID }}
           push: true
           provenance: false
           tags: |
             ghcr.io/wolletd/clang-format:latest
             wolletd/clang-format:latest
-
-      - name: Build and push image with root
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          target: root
-          push: true
-          provenance: false
-          tags: |
-            ghcr.io/wolletd/clang-format:root
-            wolletd/clang-format:root

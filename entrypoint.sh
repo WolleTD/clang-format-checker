@@ -1,10 +1,19 @@
 #!/bin/sh -e
 
+# Re-execute as the user owning the .git directory or the working directory,
+# if the former isn't present.
+if [ $(id -u) -eq 0 ] && [ ! "$__ENTRYPOINT_REINVOKED__" ]; then
+    [ -d .git ] && dir=.git || dir=.
+    read uid gid < <(stat -c '%u %g' $dir)
+    echo "Reinvoking as uid $uid gid $gid"
+    export __ENTRYPOINT_REINVOKED__=1
+    exec setpriv --reuid $uid --regid $gid --clear-groups "$0" "$@"
+fi
+
 # GitLab CI doesn't allow us to run containers with arbitrary args
 # and executes a shell instead. I'd wish for just a `cd $GITLAB_PROJECT_DIR` here.
 if [ -n "$GITLAB_CI" ]; then
-    "$@"
-    exit $?
+    exec "$@"
 fi
 
 die() { echo "$@" >&2; exit 1; }
