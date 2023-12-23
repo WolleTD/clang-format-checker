@@ -3,9 +3,9 @@ FROM alpine:latest
 RUN apk --no-cache add git python3 patch setpriv
 
 ARG GH_REPO="muttleyxd/clang-tools-static-binaries"
-ARG GH_RELEASE="master-1d7ec53d"
+ARG GH_RELEASE="master-8f72ab3c"
 ENV GH_URL="https://github.com/${GH_REPO}/releases/download/${GH_RELEASE}"
-ENV CLANG_LATEST=15
+ENV CLANG_LATEST=17
 
 ADD ${GH_URL}/clang-format-3.9_linux-amd64  \
     ${GH_URL}/clang-format-4_linux-amd64    \
@@ -21,6 +21,8 @@ ADD ${GH_URL}/clang-format-3.9_linux-amd64  \
     ${GH_URL}/clang-format-13_linux-amd64   \
     ${GH_URL}/clang-format-14_linux-amd64   \
     ${GH_URL}/clang-format-15_linux-amd64   \
+    ${GH_URL}/clang-format-16_linux-amd64   \
+    ${GH_URL}/clang-format-17_linux-amd64   \
     entrypoint.sh                           \
     check-format.sh                         \
     set-clang-version                       \
