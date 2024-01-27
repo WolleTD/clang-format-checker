@@ -33,7 +33,7 @@ jobs:
           source-ref: ${{ matrix.src-ok }}
           target-ref: ${{ matrix.target }}
       - name: clear git repo
-        run: rm -rf .git
+        run: git rm -rf . && rm -rf .git
       - name: test json is skipped
         uses: ./.test/
         with:
@@ -41,13 +41,13 @@ jobs:
           target-ref: ${{ matrix.target }}
           clang-version: 12
       - name: clear git repo
-        run: rm -rf .git
+        run: git rm -rf . && rm -rf .git
       - name: test without source-ref (does nothing in this case, but should succeed)
         uses: ./.test/
         with:
           target-ref: ${{ matrix.target }}
       - name: clear git repo
-        run: rm -rf .git
+        run: git rm -rf . && rm -rf .git
       - name: test with format error
         uses: ./.test/
         with:
@@ -56,7 +56,7 @@ jobs:
         continue-on-error: true
         id: fail1
       - name: clear git repo
-        run: rm -rf .git
+        run: git rm -rf . && rm -rf .git
       - name: test with git error
         uses: ./.test/
         with:

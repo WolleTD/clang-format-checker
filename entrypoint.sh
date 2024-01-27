@@ -30,6 +30,7 @@ fi
 if ! git status >/dev/null 2>&1; then
     [ "$CI" ] || die "Not a git repository!"
     [ "$ref" = "HEAD" ] && ref=$GITHUB_REF_NAME
+    checkout=1
     echo "Initializing repository..."
     git init -q "$PWD"
     git remote add origin "https://github.com/$GITHUB_REPOSITORY"
@@ -47,6 +48,7 @@ if [ "$CI" ]; then
     # Ensure that the source revision has some history (actions/checkout also uses depth=1)
     ref=$(git rev-parse -q --verify "origin/$ref" || git rev-parse -q --verify "$ref")
     git fetch -q "--depth=$FETCH_DEPTH" origin "+${ref}"
+    [ "$checkout" ] && git checkout "$ref"
 fi
 
 [ -z "$CLANG_VERSION" ] || set-clang-version "$CLANG_VERSION"
