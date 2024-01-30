@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: .test
       - name: Build the image
@@ -82,11 +82,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout ${{ matrix.src-ok }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ matrix.src-ok }}
       - name: checkout ref to test
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: .test
       - name: Build the image
@@ -107,7 +107,7 @@ jobs:
         continue-on-error: true
         id: fail2
       - name: checkout ${{ matrix.src-err }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ matrix.src-err }}
           clean: false
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Build the image
         run: docker build . --tag ghcr.io/wolletd/clang-format:latest
       - name: fetch required refs
