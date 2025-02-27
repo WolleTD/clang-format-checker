@@ -1,0 +1,13 @@
+--- a/git-clang-format-19
++++ b/git-clang-format-19
+@@ -98,7 +98,6 @@ def main():
+       'ts',  # TypeScript
+       'cs',  # C Sharp
+       'json',  # Json
+-      'sv', 'svh', 'v', 'vh', # Verilog
+       ])
+ 
+   p = argparse.ArgumentParser(
+-- 
+2.48.1
+

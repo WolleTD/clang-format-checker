@@ -1,14 +1,13 @@
---- a/git-clang-format-14
-+++ b/git-clang-format-14
-@@ -84,8 +84,6 @@ def main():
+--- a/git-clang-format-12
++++ b/git-clang-format-12
+@@ -96,7 +96,6 @@ def main():
        'java',  # Java
        'js',  # JavaScript
        'ts',  # TypeScript
 -      'cs',  # C Sharp
--      'json',  # Json
        ])
  
    p = argparse.ArgumentParser(
 -- 
-2.33.1
+2.48.1
 
