@@ -1,0 +1,10 @@
+--- a/git-clang-format-19
++++ b/git-clang-format-19
+@@ -173,7 +173,6 @@
+   # those files.
+   cd_to_toplevel()
+   filter_symlinks(changed_lines)
+-  filter_ignored_files(changed_lines, binary=opts.binary)
+   if opts.verbose >= 1:
+     ignored_files.difference_update(changed_lines)
+     if ignored_files:

@@ -13,6 +13,8 @@ if [ $ver -le 8 ]; then
     git_cf_ver=8
 elif [ $ver -le 12 ]; then
     git_cf_ver=12
+elif [ $ver -le 18 ]; then
+    git_cf_ver=18
 else
     git_cf_ver=${CLANG_LATEST}
 fi
