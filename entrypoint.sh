@@ -37,6 +37,7 @@ if ! git status >/dev/null 2>&1; then
 fi
 
 if [ "$CI" ]; then
+    # Ensure that the source revision exists and has some history (actions/checkout also uses depth=1)
     if [ "$ref" != "HEAD" ]; then
         git rev-parse -q --no-revs --verify "origin/$ref" || \
             git rev-parse -q --no-revs --verify "$ref" || \
@@ -44,9 +45,10 @@ if [ "$CI" ]; then
         git rev-parse -q --no-revs --verify "origin/$ref" || \
             git rev-parse -q --no-revs --verify "$ref" || \
             git fetch origin --depth=1 tag "$ref"
+        ref=$(git rev-parse -q --verify "origin/$ref" || git rev-parse -q --verify "$ref")
+    else
+        ref=$(git rev-parse -q --verify "$ref")
     fi
-    # Ensure that the source revision has some history (actions/checkout also uses depth=1)
-    ref=$(git rev-parse -q --verify "origin/$ref" || git rev-parse -q --verify "$ref")
     git fetch -q "--depth=$FETCH_DEPTH" origin "+${ref}"
     [ "$checkout" ] && git checkout "$ref"
 fi
